@@ -5,6 +5,24 @@
 #include<time.h>
 #define MAX_NOTA 100
 
+typedef struct {
+    int maior_nota;
+    int menor_nota;
+    float media;
+    float mediana;
+    float dp;
+} Cidade;
+
+typedef struct {
+    Cidade *cidades;
+    int num_cidades;
+    int maior_nota;
+    int menor_nota;
+    float media;
+    float mediana;
+    float dp;
+} Regiao;
+
 
 float media (int *notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
@@ -17,3 +35,6 @@ int menor(int* count_notas);
 double media_counts(int* count_notas, int num_alunos, int multiplier);
 float mediana(int* count_notas, int num_alunos, int multiplier);
 float DP_counts(int* count_notas, int num_alunos, int multiplier);
+void registra_cidade(Cidade *cidade, int* count_notas, int num_alunos);
+void registra_regiao(Regiao *regiao, int* count_notas, int num_alunos);
+void destroy_regiao(Regiao *regiao);

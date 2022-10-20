@@ -86,15 +86,6 @@ int * count_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos)
         count_notas[matriz_regioes[regiao][cidade][i]]++;
     }
     printf("\n");
-    // int *notas_cidade = (int *) malloc(sizeof(int) * num_alunos);
-    // memcpy(notas_cidade, matriz_regioes[regiao][cidade], sizeof(int) * num_alunos);
-    // counting_sort(notas_cidade, num_alunos);
-    // memcpy(matriz_regioes[regiao][cidade], notas_cidade, sizeof(int) * num_alunos);
-    // // for (int i = 0; i < num_alunos; i++){
-    // //     printf("%d ", matriz_regioes[regiao][cidade][i]);
-    // // }
-    // // printf("\n");
-    // free(notas_cidade);
     return count_notas;
 }
 
@@ -156,6 +147,22 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
     }
 }
 
+
+void registra_cidade(Cidade *cidade, int* count_notas, int num_alunos){
+    cidade->maior_nota = maior(count_notas);
+    cidade->menor_nota = menor(count_notas);
+    cidade->mediana = mediana(count_notas, num_alunos, 1);
+}
+
+void registra_regiao(Regiao *regiao, int* count_notas, int num_alunos){
+    regiao->maior_nota = maior(count_notas);
+    regiao->menor_nota = menor(count_notas);
+    regiao->mediana = mediana(count_notas, num_alunos, regiao->num_cidades);
+}
+
+void destroy_regiao(Regiao *regiao){
+    free(regiao->cidades);
+}
 
 float DP_counts(int* count_notas, int num_alunos, int multiplier){
     int alunos_total = num_alunos * multiplier;
