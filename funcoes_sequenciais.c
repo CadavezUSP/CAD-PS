@@ -17,31 +17,41 @@ float desvio_padrao (int *notas, int num_alunos){
     return sqrt(soma/num_alunos);
 }
 
-float mediana(int *notas, int num_alunos){
-    int meio = ((num_alunos)/2);
-    // printf("meio: %d", meio);
+// float mediana(int *notas, int num_alunos){
+//     int meio = ((num_alunos)/2);
+//     // printf("meio: %d", meio);
+//     float mediana;
+//     if(meio == 1){
+//         mediana = notas[meio];
+//     }
+//     else if(num_alunos % 2 == 0){
+//         mediana = (notas[meio] + notas[meio - 1])/2;
+//     }
+//     else {
+//         mediana = notas[meio];
+//     }
+//     return mediana;
+// }
+
+float mediana(int *notas, int *alunos_notas, int num_alunos){
+    int meio, soma = 0;
+    int i = 0;
     float mediana;
-    if(meio == 1){
-        mediana = notas[meio];
-    }
-    else if(num_alunos % 2 == 0){
-        mediana = (notas[meio] + notas[meio - 1])/2;
-    }
-    else {
-        mediana = notas[meio];
-    }
-    return mediana;
-}
-
-float mediana2(int *notas, int *alunos_notas, int num_alunos){
-    int meio, mediana;
-
     meio = (num_alunos + 1) / 2;
     
+    do{
+        soma += alunos_notas[i++];
+    }while(soma < meio);
+    i--;
+
+
     if(num_alunos % 2 == 0){
-        mediana = (notas[meio - 1] + notas[meio]) / 2;
-    }
-    else mediana = notas[meio - 1];
+        int j = i;
+        while (alunos_notas[++i] == 0);
+
+        mediana = (float) (j + i) / 2;
+    }  
+    else mediana = i;
 
     return mediana;
 }
