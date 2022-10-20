@@ -33,6 +33,18 @@ float mediana(int *notas, int num_alunos){
     return mediana;
 }
 
+float mediana2(int *notas, int *alunos_notas, int num_alunos){
+    int meio, mediana;
+
+    meio = (num_alunos + 1) / 2;
+    
+    if(num_alunos % 2 == 0){
+        mediana = (notas[meio - 1] + notas[meio]) / 2;
+    }
+    else mediana = notas[meio - 1];
+
+    return mediana;
+}
 void counting_sort(int *notas, int num_alunos){
     int i, j, count;
     int *aux = (int *) malloc(num_alunos * sizeof(int));

@@ -8,7 +8,7 @@
 
 float media (int *notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
-float mediana(int *notas, int num_alunos);
+float mediana(int *notas, int *alunos_notas, int num_alunos);
 void counting_sort(int *notas, int num_alunos);
 void soma_counters (int *counter_regiao, int* counter_cidade);
 int * ordenar_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos);

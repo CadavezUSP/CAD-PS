@@ -52,12 +52,13 @@ int main(){
                 melhor_cidade[2] = media_cidade;
             }
             soma_counters(counter_regiao, counter_cidade);
-            free(counter_cidade);
-            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, cidade_, regiao[regiao_][cidade_][0], regiao[regiao_][cidade_][a - 1], mediana(regiao[regiao_][cidade_], a), media_cidade, dp_cidade);
+            // free(counter_cidade);
+            // for (int i=0; i<=MAX_NOTA;i++){
+            //     printf("%d ", counter_cidade[i]);
+            // }
+            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, cidade_, regiao[regiao_][cidade_][0], regiao[regiao_][cidade_][a - 1], mediana(regiao[regiao_][cidade_], counter_cidade, a), media_cidade, dp_cidade);
         }
-        // for (int i=0; i<=MAX_NOTA;i++){
-        //     printf("%d ", counter_regiao[i]);
-        // }
+        
         float media_regiao = media_counts(counter_regiao, a, c);
         if (media_regiao > melhor_regiao[1]){
             melhor_regiao[0] = regiao_;
