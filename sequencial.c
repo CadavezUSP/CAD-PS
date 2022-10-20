@@ -28,22 +28,22 @@ int main(){
         }
     }
 
-    // for(int k = 0; k < r; k++){
-    //     for(int i = 0; i < c; i++){
-    //         for(int j = 0; j < a; j++){
-    //             printf("%d ",regiao[k][i][j]);
-    //         }
-    //         printf("\n");
-    //     }
-    //         printf("\n");
-    //         printf("\n");
+    for(int k = 0; k < r; k++){
+        for(int i = 0; i < c; i++){
+            for(int j = 0; j < a; j++){
+                printf("%d ",regiao[k][i][j]);
+            }
+            printf("\n");
+        }
+            printf("\n");
+            printf("\n");
 
-    // }
+    }
 
     for(int regiao_ = 0; regiao_ < r; regiao_++){
         for(int cidade_ = 0; cidade_ < c; cidade_++){
             //passa a regiao k, cidade i e num_alunos a
-            counter_cidade = ordenar_notas(regiao, regiao_, cidade_, a);
+            counter_cidade = count_notas(regiao, regiao_, cidade_, a);
             float media_cidade = media(regiao[regiao_][cidade_], a);
             float dp_cidade = desvio_padrao(regiao[regiao_][cidade_], a);
             if (media_cidade > melhor_cidade[2]){
@@ -52,11 +52,11 @@ int main(){
                 melhor_cidade[2] = media_cidade;
             }
             soma_counters(counter_regiao, counter_cidade);
-            // free(counter_cidade);
             // for (int i=0; i<=MAX_NOTA;i++){
             //     printf("%d ", counter_cidade[i]);
             // }
-            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, cidade_, regiao[regiao_][cidade_][0], regiao[regiao_][cidade_][a - 1], mediana(regiao[regiao_][cidade_], counter_cidade, a), media_cidade, dp_cidade);
+            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, cidade_, menor(counter_cidade), maior(counter_cidade), mediana(counter_cidade, a, 1), media_cidade, dp_cidade);
+            free(counter_cidade);        
         }
         
         float media_regiao = media_counts(counter_regiao, a, c);
@@ -64,7 +64,7 @@ int main(){
             melhor_regiao[0] = regiao_;
             melhor_regiao[1] = media_regiao;
         }
-        printf("\nReg %d - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, menor(counter_regiao), maior(counter_regiao), mediana_counts(counter_regiao,a, c), media_regiao, DP_counts(counter_regiao, a, c));
+        printf("\nReg %d - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", regiao_, menor(counter_regiao), maior(counter_regiao), mediana(counter_regiao, a, c), media_regiao, DP_counts(counter_regiao, a, c));
         
         soma_counters(counter_brasil, counter_regiao);
         memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
@@ -73,7 +73,7 @@ int main(){
     // for (int i=0; i<MAX_NOTA;i++){
     //     printf("%d ", counter_brasil[i]);
     // }
-    printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana_counts(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
+    printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
     printf("Melhor região: Região %d\n", melhor_regiao[0]);
     printf("Melhor cidade: Região %d, Cidade %d\n", melhor_cidade[0], melhor_cidade[1]);
 }

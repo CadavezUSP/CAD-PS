@@ -33,45 +33,45 @@ float desvio_padrao (int *notas, int num_alunos){
 //     return mediana;
 // }
 
-float mediana(int *notas, int *alunos_notas, int num_alunos){
-    int meio, soma = 0;
-    int i = 0;
-    float mediana;
-    meio = (num_alunos + 1) / 2;
+// float mediana(int *alunos_notas, int num_alunos){
+//     int meio, soma = 0;
+//     int i = 0;
+//     float mediana;
+//     meio = (num_alunos + 1) / 2;
     
-    do{
-        soma += alunos_notas[i++];
-    }while(soma < meio);
-    i--;
+//     do{
+//         soma += alunos_notas[i++];
+//     }while(soma < meio);
+//     i--;
 
 
-    if(num_alunos % 2 == 0){
-        int j = i;
-        while (alunos_notas[++i] == 0);
+//     if(num_alunos % 2 == 0){
+//         int j = i;
+//         while (alunos_notas[++i] == 0);
 
-        mediana = (float) (j + i) / 2;
-    }  
-    else mediana = i;
+//         mediana = (float) (j + i) / 2;
+//     }  
+//     else mediana = i;
 
-    return mediana;
-}
-void counting_sort(int *notas, int num_alunos){
-    int i, j, count;
-    int *aux = (int *) malloc(num_alunos * sizeof(int));
-    for (i = 0; i < num_alunos; i++) {
-        count = 0;
-        for (j = 0; j < num_alunos; j++) {
-            if (notas[j] < notas[i])
-                count++;
-            else if (notas[j] == notas[i] && j < i)
-                count++;
-        }
-        aux[count] = notas[i];
-    }
-    for (i = 0; i < num_alunos; i++)
-        notas[i] = aux[i];
-    free(aux);
-}
+//     return mediana;
+// }
+// void counting_sort(int *notas, int num_alunos){
+//     int i, j, count;
+//     int *aux = (int *) malloc(num_alunos * sizeof(int));
+//     for (i = 0; i < num_alunos; i++) {
+//         count = 0;
+//         for (j = 0; j < num_alunos; j++) {
+//             if (notas[j] < notas[i])
+//                 count++;
+//             else if (notas[j] == notas[i] && j < i)
+//                 count++;
+//         }
+//         aux[count] = notas[i];
+//     }
+//     for (i = 0; i < num_alunos; i++)
+//         notas[i] = aux[i];
+//     free(aux);
+// }
     
 void soma_counters (int *counter_regiao, int* counter_cidade){
     for (int i=0; i<=MAX_NOTA;i++){
@@ -80,28 +80,28 @@ void soma_counters (int *counter_regiao, int* counter_cidade){
 }
 
 //obtem o numero de alunos que tirou cada nota. Ex nota[MAX_NOTA] = 2 => 2 alunos tiraram nota MAX_NOTA
-int * ordenar_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos){
+int * count_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos){
     int *count_notas = (int*) calloc(MAX_NOTA+1, sizeof(int));
     for (int i =0;i<num_alunos;i++){
         count_notas[matriz_regioes[regiao][cidade][i]]++;
     }
     printf("\n");
-    int *notas_cidade = (int *) malloc(sizeof(int) * num_alunos);
-    memcpy(notas_cidade, matriz_regioes[regiao][cidade], sizeof(int) * num_alunos);
-    counting_sort(notas_cidade, num_alunos);
-    memcpy(matriz_regioes[regiao][cidade], notas_cidade, sizeof(int) * num_alunos);
-    // for (int i = 0; i < num_alunos; i++){
-    //     printf("%d ", matriz_regioes[regiao][cidade][i]);
-    // }
-    // printf("\n");
-    free(notas_cidade);
+    // int *notas_cidade = (int *) malloc(sizeof(int) * num_alunos);
+    // memcpy(notas_cidade, matriz_regioes[regiao][cidade], sizeof(int) * num_alunos);
+    // counting_sort(notas_cidade, num_alunos);
+    // memcpy(matriz_regioes[regiao][cidade], notas_cidade, sizeof(int) * num_alunos);
+    // // for (int i = 0; i < num_alunos; i++){
+    // //     printf("%d ", matriz_regioes[regiao][cidade][i]);
+    // // }
+    // // printf("\n");
+    // free(notas_cidade);
     return count_notas;
 }
 
 int maior(int* count_notas){
     int maior = 0;
     for (int i = MAX_NOTA; i >=0; i--){
-        if (count_notas[i] > 0){
+        if (count_notas[i] != 0){
             maior = i;
             break;
         }
@@ -131,7 +131,7 @@ double media_counts(int* count_notas, int num_alunos, int multiplier){
     return (double) soma/alunos_total;
 }
     
-float mediana_counts(int* count_notas, int num_alunos, int multiplier){
+float mediana(int* count_notas, int num_alunos, int multiplier){
     int alunos_total = num_alunos * multiplier;
     int meio = (alunos_total)/2;
     int soma = 0;
