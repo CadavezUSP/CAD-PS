@@ -91,11 +91,11 @@ int main(){
                 melhor_regiao[0] = regiao_;
                 melhor_regiao[1] = media_regiao;
             }
+            soma_counters(counter_brasil, meu_counter_regiao);
         }
         regioes[regiao_].media = media_regiao;
-        registra_regiao(&regioes[regiao_], counter_regiao, a);
+        registra_regiao(&regioes[regiao_], meu_counter_regiao, a);
         
-        soma_counters(counter_brasil, meu_counter_regiao);
         free(meu_counter_regiao);
         // memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }
