@@ -53,12 +53,16 @@ int main(){
     //         printf("\n");
 
     // }
-    #pragma omp parallel
-    {
 
-    #pragma omp parallel for schedule(dynamic) private (r, c, regioes, regiao) num_threads(T)
+    omp_set_nested(1);
+
+    // #pragma omp parallel num_threads(T)
+    // {
+
+    #pragma omp parallel for num_threads(T)
     for(int regiao_ = 0; regiao_ < r; regiao_++){
-        #pragma omp parallel for schedule(dynamic) private (r, c, regioes, regiao) num_threads(T)
+        int *meu_counter_regiao = calloc(MAX_NOTA+1, sizeof(int));
+        #pragma omp parallel for private(counter_cidade) num_threads(T)
         for(int cidade_ = 0; cidade_ < c; cidade_++){
             //passa a regiao k, cidade i e num_alunos a
             counter_cidade = count_notas(regiao, regiao_, cidade_, a);
@@ -71,15 +75,16 @@ int main(){
                     melhor_cidade[1] = cidade_;
                     melhor_cidade[2] = media_cidade;
                 }
+                soma_counters(meu_counter_regiao, counter_cidade);
             }
-            soma_counters(counter_regiao, counter_cidade);
             regioes[regiao_].cidades[cidade_].media = media_cidade;
             regioes[regiao_].cidades[cidade_].dp = dp_cidade;
             registra_cidade(&regioes[regiao_].cidades[cidade_], counter_cidade, a);
             free(counter_cidade);        
         }
         
-        float media_regiao = media_counts(counter_regiao, a, c);
+        float media_regiao = media_counts(meu_counter_regiao, a, c);
+        
         #pragma omp critical
         {
             if (media_regiao > melhor_regiao[1]){
@@ -90,19 +95,20 @@ int main(){
         regioes[regiao_].media = media_regiao;
         registra_regiao(&regioes[regiao_], counter_regiao, a);
         
-        soma_counters(counter_brasil, counter_regiao);
-        memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
+        soma_counters(counter_brasil, meu_counter_regiao);
+        free(meu_counter_regiao);
+        // memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }
-    }
+    // }
 
     imprime_valores(regioes, r);
     printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
     printf("Melhor região: Região %d\n", melhor_regiao[0]);
     printf("Melhor cidade: Região %d, Cidade %d\n", melhor_cidade[0], melhor_cidade[1]);
     printf("done\n");
-    double wtime = omp_get_wtime() - wtime;
+    // double wtime = omp_get_wtime() - wtime;
 
-    printf ( "Done. Elapsed wall clock time = %.5f\n", wtime );
+    // printf ( "Done. Elapsed wall clock time = %.5f\n", wtime );
     free(counter_brasil);
     free(counter_regiao);
     for (int i=0; i<r; i++){
