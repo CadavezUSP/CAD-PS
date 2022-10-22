@@ -83,11 +83,10 @@ int main(){
         memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }
 
-    // imprime_valores(regioes, r);
-    // printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
-    // printf("Melhor região: Região %d\n", melhor_regiao[0]);
-    // printf("Melhor cidade: Região %d, Cidade %d\n", melhor_cidade[0], melhor_cidade[1]);
-    printf("done\n");
+    imprime_valores(regioes, r);
+    printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
+    printf("Melhor região: Região %d\n", melhor_regiao[0]);
+    printf("Melhor cidade: Região %d, Cidade %d\n", melhor_cidade[0], melhor_cidade[1]);
     free(counter_brasil);
     free(counter_regiao);
     for (int i=0; i<r; i++){
