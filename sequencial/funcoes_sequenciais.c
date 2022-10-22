@@ -99,6 +99,7 @@ void registra_regiao(Regiao *regiao, int* count_notas, int num_alunos){
     regiao->maior_nota = maior(count_notas);
     regiao->menor_nota = menor(count_notas);
     regiao->mediana = mediana(count_notas, num_alunos, regiao->num_cidades);
+    regiao->dp = DP_counts(count_notas, num_alunos, regiao->num_cidades);
 }
 
 void destroy_regiao(Regiao *regiao){
