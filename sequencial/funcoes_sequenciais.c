@@ -85,7 +85,7 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
         while(count_notas[next_i] == 0){
                 next_i++;
             }
-        return (float)(i + i)/2;        
+        return (float)(next_i + i)/2;        
     }
     //impar
     else {

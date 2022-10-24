@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include<time.h>
+#include <time.h>
+#include <omp.h>
 #define MAX_NOTA 100
 
 typedef struct {

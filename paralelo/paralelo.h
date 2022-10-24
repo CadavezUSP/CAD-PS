@@ -1,8 +1,13 @@
+#ifndef _PARALELO_H_
+#define _PARALELO_H_
+
 #include <stdio.h>
+
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include<time.h>
+#include <omp.h>
 #define MAX_NOTA 100
 
 typedef struct {
@@ -23,8 +28,8 @@ typedef struct {
     float dp;
 } Regiao;
 
-
-float media (int *notas, int num_alunos);
+float EX2 (int *count_notas, int num_alunos);
+float media (int *count_notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
 // float mediana(int *alunos_notas, int num_alunos);
 void counting_sort(int *notas, int num_alunos);
@@ -38,3 +43,5 @@ float DP_counts(int* count_notas, int num_alunos, int multiplier);
 void registra_cidade(Cidade *cidade, int* count_notas, int num_alunos);
 void registra_regiao(Regiao *regiao, int* count_notas, int num_alunos);
 void destroy_regiao(Regiao *regiao);
+
+#endif
