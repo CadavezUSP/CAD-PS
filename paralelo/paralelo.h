@@ -9,7 +9,7 @@
 #include<time.h>
 #include <omp.h>
 #define MAX_NOTA 100
-#define T 8
+#define NUM_THREADS 8
 
 typedef struct {
     int maior_nota;

@@ -1,4 +1,5 @@
 #include "paralelo.h"
+#include "omp.h"
 
 float media (int *count_notas, int num_alunos){
     int i;
@@ -69,6 +70,7 @@ int menor(int* count_notas){
 double media_counts(int* count_notas, int num_alunos, int multiplier){
     int alunos_total = num_alunos * multiplier;
     int soma = 0;
+    #pragma omp parallel for schedule(guided) reduction(+: soma) num_threads(NUM_THREADS)
     for (int i =0; i <= MAX_NOTA; i++){
         soma += count_notas[i] * i;
     }
