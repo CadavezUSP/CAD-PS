@@ -1,6 +1,5 @@
 #include "paralelo.h"
-#include <omp.h>
-#define T 8
+
 
 void imprime_valores(Regiao *regioes, int r){
     for (int i =0; i<r; i++){
@@ -60,10 +59,10 @@ int main(){
     // #pragma omp parallel num_threads(T)
     // {
 
-    #pragma omp parallel for
+    // #pragma omp parallel for schedule(guided) num_threads(NUM_THREADS)
     for(int regiao_ = 0; regiao_ < r; regiao_++){
         int *meu_counter_regiao = calloc(MAX_NOTA+1, sizeof(int));
-        #pragma omp parallel for private(counter_cidade)
+        // #pragma omp parallel for private(counter_cidade) schedule(guided) num_threads(NUM_THREADS)
         for(int cidade_ = 0; cidade_ < c; cidade_++){
             // int tid = omp_get_thread_num();
             // printf("R:%d, C:%d - Thread: %d\n", regiao_, cidade_, tid);
