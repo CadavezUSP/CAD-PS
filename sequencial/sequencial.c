@@ -21,8 +21,11 @@ int main(){
     int *counter_brasil = calloc(MAX_NOTA+1, sizeof(int));
     int melhor_regiao[2] = {-1,-1};
     int melhor_cidade[3] = {-1, -1, -1};
+    int *somasEXl2, somaEX2lbr=0;
     
     scanf("%d %d %d %d", &r, &c, &a, &seed);
+
+    somasEXl2 = (int *) calloc(sizeof(int), r);
 
     int ***regiao = (int ***) malloc(sizeof(int **) * r);
     Regiao *regioes = (Regiao *) calloc(sizeof(Regiao) , r);
@@ -60,7 +63,9 @@ int main(){
             //passa a regiao k, cidade i e num_alunos a
             counter_cidade = count_notas(regiao, regiao_, cidade_, a);
             float media_cidade = media(regiao[regiao_][cidade_], a);
-            float dp_cidade = desvio_padrao(regiao[regiao_][cidade_], a);
+            float EX2l_cidade = EX2l(counter_cidade, a); 
+            somasEXl2[regiao_] += EX2l_cidade; 
+            float dp_cidade = sqrt (((float)EX2l_cidade)/a - media_cidade*media_cidade);
             if (media_cidade > melhor_cidade[2]){
                 melhor_cidade[0] = regiao_;
                 melhor_cidade[1] = cidade_;
@@ -79,8 +84,10 @@ int main(){
             melhor_regiao[1] = media_regiao;
         }
         regioes[regiao_].media = media_regiao;
+        regioes[regiao_].dp = sqrt(somasEXl2[regiao_]*(c*a) - media_regiao*media_regiao);
         registra_regiao(&regioes[regiao_], counter_regiao, a);
         
+        somaEX2lbr += somasEXl2[regiao_];
         soma_counters(counter_brasil, counter_regiao);
         memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }

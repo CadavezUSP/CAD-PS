@@ -60,10 +60,10 @@ int main(){
     // #pragma omp parallel num_threads(T)
     // {
 
-    #pragma omp parallel for
+    // #pragma omp parallel for 
     for(int regiao_ = 0; regiao_ < r; regiao_++){
         int *meu_counter_regiao = calloc(MAX_NOTA+1, sizeof(int));
-        #pragma omp parallel for private(counter_cidade)
+        // #pragma omp parallel for private(counter_cidade) 
         for(int cidade_ = 0; cidade_ < c; cidade_++){
             // int tid = omp_get_thread_num();
             // printf("R:%d, C:%d - Thread: %d\n", regiao_, cidade_, tid);
@@ -107,14 +107,14 @@ int main(){
         
         float media_regiao = media_counts(meu_counter_regiao, a, c);
         
-        #pragma omp critical
-        {
-            if (media_regiao > melhor_regiao[1]){
-                melhor_regiao[0] = regiao_;
-                melhor_regiao[1] = media_regiao;
-            }
-            soma_counters(counter_brasil, meu_counter_regiao);
-        }
+        // #pragma omp critical
+        // {
+        //     if (media_regiao > melhor_regiao[1]){
+        //         melhor_regiao[0] = regiao_;
+        //         melhor_regiao[1] = media_regiao;
+        //     }
+        //     soma_counters(counter_brasil, meu_counter_regiao);
+        // }
         regioes[regiao_].media = media_regiao;
         registra_regiao(&regioes[regiao_], meu_counter_regiao, a);
         

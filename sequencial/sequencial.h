@@ -25,6 +25,7 @@ typedef struct {
 } Regiao;
 
 
+float EX2l (int *notas, int num_alunos);
 float media (int *notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
 // float mediana(int *alunos_notas, int num_alunos);
