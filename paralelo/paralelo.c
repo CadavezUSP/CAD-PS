@@ -20,8 +20,13 @@ int main(){
     int *counter_brasil = calloc(MAX_NOTA+1, sizeof(int));
     int melhor_regiao[2] = {-1,-1};
     int melhor_cidade[3] = {-1, -1, -1};
+    int *somasEXl2, somaEX2lbr=0;
+    float *somasMedias, somaMediabr=0;
     
     scanf("%d %d %d %d", &r, &c, &a, &seed);
+
+    somasEXl2 = (int *) calloc(sizeof(int), r);
+    somasMedias = (float *) calloc(sizeof(float), r);
 
     int ***regiao = (int ***) malloc(sizeof(int **) * r);
     Regiao *regioes = (Regiao *) calloc(sizeof(Regiao) , r);
@@ -59,40 +64,29 @@ int main(){
     // #pragma omp parallel num_threads(T)
     // {
 
-    // #pragma omp parallel for schedule(guided) num_threads(NUM_THREADS)
+    #pragma omp parallel for schedule(guided) num_threads(NUM_THREADS)
     for(int regiao_ = 0; regiao_ < r; regiao_++){
         int *meu_counter_regiao = calloc(MAX_NOTA+1, sizeof(int));
-        // #pragma omp parallel for private(counter_cidade) schedule(guided) num_threads(NUM_THREADS)
+        #pragma omp parallel for private(counter_cidade) schedule(guided) num_threads(NUM_THREADS)
         for(int cidade_ = 0; cidade_ < c; cidade_++){
-            // int tid = omp_get_thread_num();
-            // printf("R:%d, C:%d - Thread: %d\n", regiao_, cidade_, tid);
 
-            //paralelismo aqui
             counter_cidade = count_notas(regiao, regiao_, cidade_, a);
             float media_cidade;
-            float EX2_cidade;
-            /*
-            #pragma omp sections 
-            {
-                #pragma omp section
-                media_cidade = media(counter_cidade, a);
+            float EX2l_cidade;
+            media_cidade = media(counter_cidade, a);
+            EX2l_cidade = EX2l(counter_cidade, a); 
 
-                #pragma omp section
-                EX2_cidade = EX2(counter_cidade, a);
 
-                #pragma omp section
-                registra_cidade(&regioes[regiao_].cidades[cidade_], counter_cidade, a);
-            }
-            */
-                media_cidade = media(counter_cidade, a);
-                EX2_cidade = EX2(counter_cidade, a);
-                registra_cidade(&regioes[regiao_].cidades[cidade_], counter_cidade, a);
+            registra_cidade(&regioes[regiao_].cidades[cidade_], counter_cidade, a);
 
             regioes[regiao_].cidades[cidade_].media = media_cidade;
-            regioes[regiao_].cidades[cidade_].dp = sqrt (EX2_cidade - media_cidade*media_cidade)    ;
+            regioes[regiao_].cidades[cidade_].dp = sqrt (((float)EX2l_cidade)/a - media_cidade*media_cidade);
 
             #pragma omp critical
             {
+                somasEXl2[regiao_] += EX2l_cidade; 
+                somasMedias[regiao_] += media_cidade;
+
                 if (media_cidade > melhor_cidade[2]){
                     melhor_cidade[0] = regiao_;
                     melhor_cidade[1] = cidade_;
@@ -104,32 +98,38 @@ int main(){
             free(counter_cidade);        
         }
         
-        float media_regiao = media_counts(meu_counter_regiao, a, c);
-        
-        // #pragma omp critical
-        // {
-        //     if (media_regiao > melhor_regiao[1]){
-        //         melhor_regiao[0] = regiao_;
-        //         melhor_regiao[1] = media_regiao;
-        //     }
-        //     soma_counters(counter_brasil, meu_counter_regiao);
-        // }
+        float media_regiao = somasMedias[regiao_]/c;
+
+        #pragma omp critical
+        {
+            if (media_regiao > melhor_regiao[1]){
+                melhor_regiao[0] = regiao_;
+                melhor_regiao[1] = media_regiao;
+            }
+            soma_counters(counter_brasil, meu_counter_regiao);
+        }
         regioes[regiao_].media = media_regiao;
+        regioes[regiao_].dp = sqrt(somasEXl2[regiao_]/(c*a) - media_regiao*media_regiao);
         registra_regiao(&regioes[regiao_], meu_counter_regiao, a);
         
+        somaEX2lbr += somasEXl2[regiao_];
+        somaMediabr += media_regiao;
         free(meu_counter_regiao);
-        // memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }
-    // }
+
+    float mediaBr = somaMediabr /r;
+    float dpBr = sqrt (somaEX2lbr/(r*c*a) - mediaBr*mediaBr);
+
+    wtime = omp_get_wtime() - wtime;
 
     // imprime_valores(regioes, r);
-    // printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), media_counts(counter_brasil, a, c*r), DP_counts(counter_brasil, a, c*r));
+    // printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), mediaBr, dpBr);
     // printf("Melhor região: Região %d\n", melhor_regiao[0]);
     // printf("Melhor cidade: Região %d, Cidade %d\n", melhor_cidade[0], melhor_cidade[1]);
     // printf("done\n");
-    wtime = omp_get_wtime() - wtime;
 
-    printf ( "Done. Elapsed wall clock time = %.5f\n", wtime );
+    printf ( "\nDone. Elapsed wall clock time = %.5f\n", wtime );
+
     free(counter_brasil);
     for (int i=0; i<r; i++){
         destroy_regiao(&regioes[i]);

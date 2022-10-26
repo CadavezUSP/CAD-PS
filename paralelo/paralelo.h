@@ -29,7 +29,7 @@ typedef struct {
     float dp;
 } Regiao;
 
-float EX2 (int *count_notas, int num_alunos);
+float EX2l(int *count_notas, int num_alunos);
 float media (int *count_notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
 // float mediana(int *alunos_notas, int num_alunos);

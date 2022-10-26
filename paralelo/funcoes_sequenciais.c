@@ -1,6 +1,15 @@
 #include "paralelo.h"
 #include "omp.h"
 
+
+float EX2l (int *count_notas, int num_alunos){
+    int i;
+    float soma = 0;
+    for (i = 0; i <= MAX_NOTA; i++)
+        soma += count_notas[i]*i*i;
+    return soma;
+}
+
 float media (int *count_notas, int num_alunos){
     int i;
     float soma = 0;
@@ -36,8 +45,7 @@ void soma_counters (int *counter_regiao, int* counter_cidade){
 //obtem o numero de alunos que tirou cada nota. Ex nota[MAX_NOTA] = 2 => 2 alunos tiraram nota MAX_NOTA
 int * count_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos){
     int *count_notas = (int*) calloc(MAX_NOTA+1, sizeof(int));
-    #pragma omp parallel for reduction(+: count_notas[:MAX_NOTA+1]) num_threads(4)
-    // #pragma omp parallel for
+    // #pragma omp parallel for reduction(+: count_notas[:MAX_NOTA+1]) num_threads(4)
     for (int i =0;i<num_alunos;i++){
         count_notas[matriz_regioes[regiao][cidade][i]]++;
     }
