@@ -1,5 +1,13 @@
 #include "sequencial.h"
 
+float EX2l (int *count_notas, int num_alunos){
+    int i;
+    float soma = 0;
+    for (i = 0; i <= MAX_NOTA; i++)
+        soma += count_notas[i]*i*i;
+    return soma;
+}
+
 float media (int *notas, int num_alunos){
     int i;
     float soma = 0;

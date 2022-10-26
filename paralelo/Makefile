@@ -1,5 +1,5 @@
 all:
-	gcc paralelo.c funcoes_sequenciais.c -o paralelo -fopenmp -lm -Wall -Werror -g
+	gcc paralelo.c funcoes_sequenciais.c -o paralelo -fopenmp -lm -Werror -g
 run:
 	./paralelo
 clean:
