@@ -1,5 +1,7 @@
 all:
 	gcc sequencial.c funcoes_sequenciais.c -o sequencial -lm -fopenmp -Wall -Werror -g
+opt:
+	gcc sequencial.c funcoes_sequenciais.c -o sequencial -O3 -lm -fopenmp
 run:
 	./sequencial
 clean:
