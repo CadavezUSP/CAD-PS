@@ -78,7 +78,7 @@ int main(){
     omp_set_nested(1);
 
     #pragma omp parallel for schedule(guided) reduction(+: somaEX2lbr) reduction(+: somaMediabr) \
-        reduction(+:counter_brasil[:MAX_NOTA]) num_threads(NUM_THREADS)
+        reduction(+:counter_brasil[:MAX_NOTA]) reduction(maximo: myMaxRegiao) num_threads(NUM_THREADS)
     for(int regiao_ = 0; regiao_ < r; regiao_++){
         int *meu_counter_regiao = calloc(MAX_NOTA+1, sizeof(int));
         #pragma omp parallel for private(counter_cidade) schedule(guided) reduction(+: somasEXl2[regiao_]) reduction(+:somasMedias[regiao_]) \
