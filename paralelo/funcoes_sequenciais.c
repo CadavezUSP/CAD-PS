@@ -37,6 +37,7 @@ float desvio_padrao (int *notas, int num_alunos){
 
     
 void soma_counters (int *counter_regiao, int* counter_cidade){
+    #pragma omp simd
     for (int i=0; i<=MAX_NOTA;i++){
         counter_regiao[i] += counter_cidade[i];
     }

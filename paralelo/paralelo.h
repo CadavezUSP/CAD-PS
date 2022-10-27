@@ -29,6 +29,12 @@ typedef struct {
     float dp;
 } Regiao;
 
+typedef struct {
+    int regiao;
+    int cidade;
+    float maxMedia;
+} MyMax;
+
 float EX2l(int *count_notas, int num_alunos);
 float media (int *count_notas, int num_alunos);
 float desvio_padrao (int *notas, int num_alunos);
