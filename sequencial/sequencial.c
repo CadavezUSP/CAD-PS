@@ -101,7 +101,7 @@ int main(){
     float mediaBr = somaMediabr /r;
     float dpBr = sqrt (somaEX2lbr/(r*c*a) - mediaBr*mediaBr);
 
-    wtime = omp_get_wtime() - wtime;
+    // wtime = omp_get_wtime() - wtime;
 
     // imprime_valores(regioes, r);
     // printf("\nBrasil - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n\n", menor(counter_brasil), maior(counter_brasil), mediana(counter_brasil, a, c*r), mediaBr, dpBr);
@@ -112,12 +112,25 @@ int main(){
 
     free(counter_brasil);
     free(counter_regiao);
+    free(somasEXl2);
+    free(somasMedias);
+    // for(int k = 0; k < r; k++){
+    //     for(int i = 0; i < c; i++){
+    //         for(int j = 0; j < a; j++){
+    //             printf("%d ",regiao[k][i][j]);
+    //         }
+    //         printf("\n");
+    //     }
+    //         printf("\n");
+    //         printf("\n");
+
+    // }
     for (int i=0; i<r; i++){
         destroy_regiao(&regioes[i]);
-        for (int j=0; j<c; j++){
-            free(regiao[i][j]);
-        }
+        for (int j=0; j<c; j++)
+            free(regiao[i][j]);                
         free(regiao[i]);
     }
+    free(regiao);
     free(regioes);
 }

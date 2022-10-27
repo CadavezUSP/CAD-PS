@@ -8,3 +8,5 @@ clean:
 	rm sequencial
 zip:
 	zip sequencial.zip sequencial.c funcoes_sequenciais.c Makefile
+val:
+	valgrind --leak-check=full --show-leak-kinds=all ./sequencial
