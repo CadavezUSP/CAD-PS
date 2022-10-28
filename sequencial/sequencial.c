@@ -64,7 +64,7 @@ int main(){
             //soma o vetor count da cidade ao vetor count da regiao
             soma_counters(counter_regiao, counter_cidade);
 
-            //calculo das infos da regiao
+            //calculo das infos da cidade
             regioes[regiao_].cidades[cidade_].media = media_cidade;
             regioes[regiao_].cidades[cidade_].dp = dp_cidade;
             regioes[regiao_].cidades[cidade_].maior_nota = maior(counter_cidade);

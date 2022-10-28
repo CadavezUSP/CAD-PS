@@ -68,11 +68,12 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
         soma += count_notas[i];
         i++;
     }
-    i--;
+    if (num_alunos != 3)
+        i--;
+
     int next_i = i+1;
-    
     //numero de alunos par
-    if (num_alunos % 2 == 0){
+    if (num_alunos * multiplier % 2 == 0){
         if(count_notas[i] > 1){
             return (float) i;
         }
@@ -83,7 +84,10 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
     }
     //impar
     else {
-        return (float)i;
+         while(count_notas[next_i] == 0){
+                next_i++;
+            }
+        return (float)next_i;
     }
 }
 
