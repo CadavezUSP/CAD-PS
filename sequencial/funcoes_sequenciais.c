@@ -1,5 +1,6 @@
 #include "sequencial.h"
 
+//funcao que calcula E[x²] para o desvio padrao 
 float EX2l (int *count_notas, int num_alunos){
     int i;
     float soma = 0;
@@ -8,6 +9,7 @@ float EX2l (int *count_notas, int num_alunos){
     return soma;
 }
 
+//calcula a media
 float media (int *notas, int num_alunos){
     int i;
     float soma = 0;
@@ -16,19 +18,10 @@ float media (int *notas, int num_alunos){
     return soma/num_alunos;
 }
 
-float desvio_padrao (int *notas, int num_alunos){
-    int i;
-    float soma = 0;
-    float media_notas = media(notas, num_alunos);
-    for (i = 0; i < num_alunos; i++)
-        soma += (notas[i] - media_notas) * (notas[i] - media_notas);
-    return sqrt(soma/num_alunos);
-}
-
-    
-void soma_counters (int *counter_regiao, int* counter_cidade){
+//soma o vetor counter2 ao vetor counter1
+void soma_counters (int *counter1, int* counter2){
     for (int i=0; i<=MAX_NOTA;i++){
-        counter_regiao[i] += counter_cidade[i];
+        counter1[i] += counter2[i];
     }
 }
 
@@ -41,6 +34,7 @@ int * count_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos)
     return count_notas;
 }
 
+//obtem a maior nota
 int maior(int* count_notas){
     int maior = 0;
     for (int i = MAX_NOTA; i >=0; i--){
@@ -52,6 +46,7 @@ int maior(int* count_notas){
     return maior;
 }
 
+//obtem a menor nota
 int menor(int* count_notas){
     int menor = 500;
     for (int i = 0; i <= MAX_NOTA; i++){
@@ -130,4 +125,14 @@ float DP_counts(int* count_notas, int num_alunos, int multiplier){
         // soma += (count_notas[i] * i - media_notas) * (count_notas[i] * i - media_notas);
     }
     return sqrt(soma/alunos_total);
+}
+
+void imprime_valores(Regiao *regioes, int r){
+    for (int i =0; i<r; i++){
+        for (int j =0; j<regioes[i].num_cidades; j++){
+            printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", i, j, regioes[i].cidades[j].menor_nota, regioes[i].cidades[j].maior_nota, regioes[i].cidades[j].mediana, regioes[i].cidades[j].media, regioes[i].cidades[j].dp);
+        }
+        printf("Reg %d - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", i, regioes[i].menor_nota, regioes[i].maior_nota, regioes[i].mediana, regioes[i].media, regioes[i].dp);
+        printf("\n");
+    }
 }
