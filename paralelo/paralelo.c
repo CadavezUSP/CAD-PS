@@ -151,13 +151,17 @@ int main(){
 
     printf ( "\nDone. Elapsed wall clock time = %.5f\n", wtime );
 
+    //libera a memoria
     free(counter_brasil);
+    free(somasEXl2);
+    free(somasMedias);
     for (int i=0; i<r; i++){
         destroy_regiao(&regioes[i]);
-        for (int j=0; j<c; j++){
-            free(regiao[i][j]);
-        }
+        for (int j=0; j<c; j++)
+            free(regiao[i][j]);                
         free(regiao[i]);
     }
+    free(regiao);
     free(regioes);
+    return 0;
 }

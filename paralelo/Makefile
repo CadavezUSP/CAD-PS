@@ -6,3 +6,5 @@ clean:
 	rm paralelo
 zip:
 	zip paralelo.zip paralelo.c funcoes_sequenciais.c Makefile
+val:
+	valgrind --leak-check=full --show-leak-kinds=all ./paralelo
