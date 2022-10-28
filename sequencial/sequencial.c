@@ -64,9 +64,12 @@ int main(){
             //soma o vetor count da cidade ao vetor count da regiao
             soma_counters(counter_regiao, counter_cidade);
 
+            //calculo das infos da regiao
             regioes[regiao_].cidades[cidade_].media = media_cidade;
             regioes[regiao_].cidades[cidade_].dp = dp_cidade;
-            registra_cidade(&regioes[regiao_].cidades[cidade_], counter_cidade, a);
+            regioes[regiao_].cidades[cidade_].maior_nota = maior(counter_cidade);
+            regioes[regiao_].cidades[cidade_].menor_nota = menor(counter_cidade);
+            regioes[regiao_].cidades[cidade_].mediana = mediana(counter_cidade, a, 1);
             free(counter_cidade);        
         }
         
@@ -76,11 +79,14 @@ int main(){
             melhor_regiao[0] = regiao_;
             melhor_regiao[1] = media_regiao;
         }
-        //calculo do desvio padrao da regiao
+        //calculo das infos da regiao
         regioes[regiao_].media = media_regiao;
         regioes[regiao_].dp = sqrt(somasEXl2[regiao_]/(c*a) - media_regiao*media_regiao);
-        registra_regiao(&regioes[regiao_], counter_regiao, a);
+        regioes[regiao_].maior_nota = maior(counter_regiao);
+        regioes[regiao_].menor_nota = menor(counter_regiao);
+        regioes[regiao_].mediana = mediana(counter_regiao, a, c);
         
+
         somaEX2lbr += somasEXl2[regiao_];
         somaMediabr += media_regiao;
 
@@ -91,6 +97,7 @@ int main(){
         memset(counter_regiao, 0, (MAX_NOTA+1) * sizeof(int));
     }
 
+    //calcula as infos do Brasil
     float mediaBr = somaMediabr /r;
     float dpBr = sqrt (somaEX2lbr/(r*c*a) - mediaBr*mediaBr);
 

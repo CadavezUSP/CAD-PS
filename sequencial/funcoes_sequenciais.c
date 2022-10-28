@@ -58,16 +58,7 @@ int menor(int* count_notas){
     return menor;
 }
 
-
-double media_counts(int* count_notas, int num_alunos, int multiplier){
-    int alunos_total = num_alunos * multiplier;
-    int soma = 0;
-    for (int i =0; i <= MAX_NOTA; i++){
-        soma += count_notas[i] * i;
-    }
-    return (double) soma/alunos_total;
-}
-    
+//obtem a mediana das notas
 float mediana(int* count_notas, int num_alunos, int multiplier){
     int alunos_total = num_alunos * multiplier;
     int meio = (alunos_total)/2;
@@ -96,35 +87,9 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
     }
 }
 
-
-void registra_cidade(Cidade *cidade, int* count_notas, int num_alunos){
-    cidade->maior_nota = maior(count_notas);
-    cidade->menor_nota = menor(count_notas);
-    cidade->mediana = mediana(count_notas, num_alunos, 1);
-}
-
-void registra_regiao(Regiao *regiao, int* count_notas, int num_alunos){
-    regiao->maior_nota = maior(count_notas);
-    regiao->menor_nota = menor(count_notas);
-    regiao->mediana = mediana(count_notas, num_alunos, regiao->num_cidades);
-    regiao->dp = DP_counts(count_notas, num_alunos, regiao->num_cidades);
-}
-
+//libera(free) a memoria alocada para Regiao
 void destroy_regiao(Regiao *regiao){
     free(regiao->cidades);
-}
-
-float DP_counts(int* count_notas, int num_alunos, int multiplier){
-    int alunos_total = num_alunos * multiplier;
-    double soma = 0;
-    double media_notas = media_counts(count_notas, num_alunos, multiplier);
-    for (int i = 0; i <= MAX_NOTA; i++){
-        if(count_notas[i] > 0){
-            soma += (count_notas[i] * i - media_notas) * (count_notas[i] * i - media_notas);
-        }
-        // soma += (count_notas[i] * i - media_notas) * (count_notas[i] * i - media_notas);
-    }
-    return sqrt(soma/alunos_total);
 }
 
 void imprime_valores(Regiao *regioes, int r){
