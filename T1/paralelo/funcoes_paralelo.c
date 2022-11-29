@@ -1,6 +1,7 @@
-#include "sequencial.h"
+#include "paralelo.h"
+#include "omp.h"
 
-//funcao que calcula E[x²] para o desvio padrao 
+
 float EX2l (int *count_notas, int num_alunos){
     int i;
     float soma = 0;
@@ -9,19 +10,27 @@ float EX2l (int *count_notas, int num_alunos){
     return soma;
 }
 
-//calcula a media
-float media (int *notas, int num_alunos){
+float media (int *count_notas, int num_alunos){
     int i;
     float soma = 0;
-    for (i = 0; i < num_alunos; i++)
-        soma += notas[i];
+    for (i = 0; i <= MAX_NOTA; i++)
+        soma += count_notas[i]*i;
     return soma/num_alunos;
 }
 
-//soma o vetor counter2 ao vetor counter1
-void soma_counters (int *counter1, int* counter2){
+float EX2 (int *count_notas, int num_alunos){
+    int i;
+    float soma = 0;
+    for (i = 0; i <= MAX_NOTA; i++)
+        soma += count_notas[i]*i*i;
+    return soma/num_alunos;
+}
+
+    
+void soma_counters (int *counter_regiao, int* counter_cidade){
+    #pragma omp simd
     for (int i=0; i<=MAX_NOTA;i++){
-        counter1[i] += counter2[i];
+        counter_regiao[i] += counter_cidade[i];
     }
 }
 
@@ -34,7 +43,6 @@ int * count_notas(int ***matriz_regioes, int regiao, int cidade, int num_alunos)
     return count_notas;
 }
 
-//obtem a maior nota
 int maior(int* count_notas){
     int maior = 0;
     for (int i = MAX_NOTA; i >=0; i--){
@@ -46,7 +54,6 @@ int maior(int* count_notas){
     return maior;
 }
 
-//obtem a menor nota
 int menor(int* count_notas){
     int menor = 500;
     for (int i = 0; i <= MAX_NOTA; i++){
@@ -58,6 +65,17 @@ int menor(int* count_notas){
     return menor;
 }
 
+
+double media_counts(int* count_notas, int num_alunos, int multiplier){
+    int alunos_total = num_alunos * multiplier;
+    int soma = 0;
+    #pragma omp parallel for schedule(guided) reduction(+: soma) num_threads(NUM_THREADS)
+    for (int i =0; i <= MAX_NOTA; i++){
+        soma += count_notas[i] * i;
+    }
+    return (double) soma/alunos_total;
+}
+    
 //obtem a mediana das notas
 float mediana(int* count_notas, int num_alunos, int multiplier){
     int alunos_total = num_alunos * multiplier;
@@ -68,11 +86,12 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
         soma += count_notas[i];
         i++;
     }
-    i--;
+    if (num_alunos != 3)
+        i--;
+
     int next_i = i+1;
-    
     //numero de alunos par
-    if (num_alunos % 2 == 0){
+    if (num_alunos * multiplier % 2 == 0){
         if(count_notas[i] > 1){
             return (float) i;
         }
@@ -83,14 +102,18 @@ float mediana(int* count_notas, int num_alunos, int multiplier){
     }
     //impar
     else {
-        return (float)i;
+         while(count_notas[next_i] == 0){
+                next_i++;
+            }
+        return (float)next_i;
     }
 }
 
-//libera(free) a memoria alocada para Regiao
+
 void destroy_regiao(Regiao *regiao){
     free(regiao->cidades);
 }
+
 
 void imprime_valores(Regiao *regioes, int r){
     for (int i =0; i<r; i++){
@@ -99,5 +122,13 @@ void imprime_valores(Regiao *regioes, int r){
         }
         printf("Reg %d - menor: %d, maior: %d, mediana: %.2f, média: %.2f e DP: %.2f\n", i, regioes[i].menor_nota, regioes[i].maior_nota, regioes[i].mediana, regioes[i].media, regioes[i].dp);
         printf("\n");
+    }
+}
+
+void maxCidade(int *omp_out, int *omp_in) {
+    if (omp_in[2] > omp_out[2]) {
+        omp_out[0] = omp_in[0];
+        omp_out[1] = omp_in[1];
+        omp_out[2] = omp_in[2];
     }
 }
