@@ -1,12 +1,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
 
 #define V 4
 
 
+int **constructGraph(int n) {
+
+	// srand (time(NULL));
+
+	int **graph = (int **) malloc (n * sizeof(int *));
+
+	for (int i=0; i<n; i++) {
+		graph[i] = (int *) malloc (n* sizeof(int));
+
+		for (int j=0; j<n; j++) {
+
+			if (j==i) {
+				graph[i][j] = 0;
+			}
+			else {
+				graph[i][j] = rand() % 100;
+			}
+
+		}
+	}
+
+	return graph;
+}
+
+void printAndFreeGraph (int **graph, int n) {
+
+	for (int i=0; i<n; i++) {
+		for (int j=0; j<n; j++) {
+			printf("%d ", graph[i][j]);
+		}
+		printf("\n");
+		free (graph[i]);
+	}
+
+	free(graph);
+}
+
+
 // Function to find the minimum weight Hamiltonian Cycle
-void tsp(int graph[][V], char *v, int currPos, int n, int count, int cost, int *ans, int *path, int *bestPath) {
+void tsp(int **graph, char *v, int currPos, int n, int count, int cost, int *ans, int *path, int *bestPath) {
 
 	// If last node is reached and it has a link
 	// to the starting node i.e the source then
@@ -49,15 +88,20 @@ void tsp(int graph[][V], char *v, int currPos, int n, int count, int cost, int *
 
 // Driver code
 int main(int argc, char *argv[]) {
-	// n is the number of nodes i.e. V
-	int n = 4;
 
-	int graph[][V] = {
-		{ 0, 24, 15, 27 },
-		{ 24, 0, 23, 14 },
-		{ 15, 23, 0, 18 },
-		{ 27, 14, 18, 0 }
-	};
+	if (argc != 2) {
+		printf("Error\nMissing arguments\n");
+		return -1;
+	}
+
+	// n is the number of nodes i.e. V
+	int n = atoi (argv[1]);
+
+	int **graph = constructGraph(n);
+
+	clock_t beginClock = clock();
+	clock_t endClock;
+	double time_spent = 0.0;
 
 	// Boolean array to check if a node
 	// has been visited or not
@@ -65,17 +109,24 @@ int main(int argc, char *argv[]) {
 	for (int i = 0; i < n; i++)
 		v[i] = 0;
 
-	// Mark 0th node as visited
-	v[0] = 1;
+	int path[n], bestPath[n];
 	int ans = INT_MAX;
 
-	int index = 0;
-	int path[n], bestPath[n];
+	for (int i=0; i<n; i++) {
 
-	path[0] = 0;
+		// Mark ith node as visited
+		v[i] = 1;
 
-	// Find the minimum weight Hamiltonian Cycle
-	tsp(graph, v, 0, n, 1, 0, &ans, path, bestPath);
+		if(i!=0)
+			v[i-1] = 0;
+
+		path[0] = i;
+
+		// Find the minimum weight Hamiltonian Cycle
+		tsp(graph, v, i, n, 1, 0, &ans, path, bestPath);
+	}
+
+	endClock = clock();
 
 	// ans is the minimum weight Hamiltonian Cycle
 	printf("ans: %d\n", ans);
@@ -85,6 +136,11 @@ int main(int argc, char *argv[]) {
 	}
 
 	printf("\n");
+
+	printAndFreeGraph(graph, n);
+
+	time_spent += (double)(endClock - beginClock) / CLOCKS_PER_SEC;
+	printf("\n\n\tTEMPO: %lf\n", time_spent);
 
 	return 0;
 }

@@ -1,9 +1,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <time.h>
 #include "mpi.h"
 
-#define V 4
+
+int **constructGraph(int n) {
+
+	// srand (time(NULL));
+
+	int **graph = (int **) malloc (n * sizeof(int *));
+
+	for (int i=0; i<n; i++) {
+		graph[i] = (int *) malloc (n* sizeof(int));
+
+		for (int j=0; j<n; j++) {
+
+			if (j==i) {
+				graph[i][j] = 0;
+			}
+			else {
+				graph[i][j] = rand() % 100;
+			}
+
+		}
+	}
+
+	return graph;
+}
+
+void printAndFreeGraph (int **graph, int n) {
+
+	for (int i=0; i<n; i++) {
+		for (int j=0; j<n; j++) {
+			printf("%d ", graph[i][j]);
+		}
+		printf("\n");
+		free (graph[i]);
+	}
+
+	free(graph);
+}
 
 
 unsigned long long factorial (int n) {
@@ -46,7 +83,7 @@ int *ithPermutation(const int n, int i) {
    return perm;
 }
 
-int calcularCustoPermutacao (int *perm, int graph[][V], int n) {
+int calcularCustoPermutacao (int *perm, int **graph, int n) {
 	int custo = 0;
 	int custoAresta;
 
@@ -73,17 +110,22 @@ int calcularCustoPermutacao (int *perm, int graph[][V], int n) {
 
 // Driver code
 int main(int argc, char *argv[]) {
-	int P; // numero de processadores
-	// n is the number of nodes i.e. V
-	int n = 4;
 
-	// Gerar aleatoriamente
-	int graph[][V] = {
-		{ 0, 24, 15, 27 },
-		{ 24, 0, 23, 14 },
-		{ 15, 23, 0, 18 },
-		{ 27, 14, 18, 0 }
-	};
+	if (argc < 2) {
+		printf("Error\nMissing arguments\n");
+		return -1;
+	}
+
+	// n is the number of nodes i.e. V
+	int n = atoi (argv[1]);
+
+	int P; // numero de processadores
+
+	int **graph = constructGraph(n);
+
+	clock_t beginClock = clock();
+	clock_t endClock;
+	double time_spent = 0.0;
 
 	int myrank;
 	MPI_Status status;
@@ -147,6 +189,8 @@ int main(int argc, char *argv[]) {
 			}
 		}
 
+		endClock = clock();
+
 		printf("\nMENOR CUSTO: %lld\nCAMINHO: ", menorCusto);
 
 		for (int i=0; i<n; i++) {
@@ -158,11 +202,17 @@ int main(int argc, char *argv[]) {
 
 		free(custos);
 		free(caminhos);
+
+		printAndFreeGraph(graph, n);
+
+		time_spent += (double)(endClock - beginClock) / CLOCKS_PER_SEC;
+		printf("\n\n\tTEMPO: %lfs\n", time_spent);
 	}
 
 	MPI_Finalize();
 
 	free(menorCaminho);
+
 
 	return 0;
 }
