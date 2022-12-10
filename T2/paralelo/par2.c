@@ -98,7 +98,7 @@ unsigned long long factorial (int n) {
 	return factorial;
 }
 
-int *ithPermutation(const int n, int i, unsigned long long *fact) {
+int *ithPermutation(const int n, unsigned long long i, unsigned long long *fact) {
    int j, k = 0;
    // int *fact = (int *)calloc(n, sizeof(int));
    int *perm = (int *)calloc(n, sizeof(int));
@@ -133,7 +133,7 @@ int calcularCustoPermutacao (int *perm, int **graph, int n, unsigned long long t
 
 	for (int i=0; i<n-1; i++) {
 		if (perm[i]<0 || perm[i+1]<0) {
-			printf("\t%lld", test);
+			printf("\t%lld\n", test);
 			printf("\t%d %d\n", i, i+1);
 			printf("\t%d %d\n\n", perm[i], perm[i+1]);
 		}
@@ -218,6 +218,11 @@ int main(int argc, char *argv[]) {
 	unsigned long long permutacaoFinal = permutacoesPorProcessador*(myrank+1);
 
 	permutacaoAtual = ithPermutation(n, permutacaoInicial, fact);
+
+for (int a=0; a<n; a++) {
+	printf("%d ", permutacaoAtual[a]);
+}
+printf("\n");
 
 	// Loop para cada combinação do processador atual
 	for (unsigned long long i=permutacaoInicial; i<permutacaoFinal; i++) {
