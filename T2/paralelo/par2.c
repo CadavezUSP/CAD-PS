@@ -88,16 +88,6 @@ void printAndFreeGraph (int **graph, int n) {
 }
 
 
-unsigned long long factorial (int n) {
-	unsigned long long factorial=1;
-
-	for (int i=1; i<=n; i++) {
-		factorial *= i;
-	}
-
-	return factorial;
-}
-
 int *ithPermutation(const int n, unsigned long long i, unsigned long long *fact) {
    int j, k = 0;
    // int *fact = (int *)calloc(n, sizeof(int));
@@ -186,15 +176,6 @@ int main(int argc, char *argv[]) {
 
 	int **graph = constructGraph(n);
 
-	// printar grafo
-	// for (int i=0; i<n; i++) {
-	// 	for (int j=0; j<n; j++) {
-	// 		printf("%d ", graph[i][j]);
-	// 	}
-	// 	printf("\n");
-	// }
-
-
 	clock_t beginClock = clock();
 	clock_t endClock;
 	double time_spent = 0.0;
@@ -210,19 +191,22 @@ int main(int argc, char *argv[]) {
 
 	unsigned int menorCusto = INT_MAX;
 	unsigned int custoAtual;
-	int *permutacaoAtual, *menorCaminho=NULL;
+	int *permutacaoAtual=NULL, *menorCaminho=NULL;
 
+	unsigned long long nFatorial = fact[n-1]*n;
 
-	unsigned long long permutacoesPorProcessador = factorial(n)/P;
+	unsigned long long permutacoesPorProcessador = nFatorial/P;
+
+	if (permutacoesPorProcessador == 0){
+		permutacoesPorProcessador = 1;
+	}
+
 	unsigned long long permutacaoInicial = permutacoesPorProcessador*myrank;
-	unsigned long long permutacaoFinal = permutacoesPorProcessador*(myrank+1);
+	unsigned long long permutacaoFinal = permutacoesPorProcessador*(myrank+1) > nFatorial ? nFatorial : permutacoesPorProcessador*(myrank+1);
 
-	permutacaoAtual = ithPermutation(n, permutacaoInicial, fact);
+	if (permutacaoInicial < nFatorial)
+		permutacaoAtual = ithPermutation(n, permutacaoInicial, fact);
 
-for (int a=0; a<n; a++) {
-	printf("%d ", permutacaoAtual[a]);
-}
-printf("\n");
 
 	// Loop para cada combinação do processador atual
 	for (unsigned long long i=permutacaoInicial; i<permutacaoFinal; i++) {
@@ -237,7 +221,6 @@ printf("\n");
 		nextPermutation(permutacaoAtual, n);
 	}
 
-
 	// MPI_Reduce ()
 	unsigned int *custos = NULL;
 	int *caminhos = NULL;
@@ -245,17 +228,25 @@ printf("\n");
 		custos = (unsigned int *) malloc (P * sizeof(unsigned int));
 		caminhos = (int  *) malloc (P * n * sizeof(int));
 	}
+
 	// Gather dos custos
 	MPI_Gather (&menorCusto, 1, MPI_UNSIGNED, custos, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
-	// Gather dos caminhos
-	MPI_Gather (menorCaminho, n, MPI_INT, caminhos, n, MPI_INT, 0, MPI_COMM_WORLD);
+	if (menorCaminho != NULL) {
+		if (myrank == 0) {
+			for (int i=0; i<n; i++) {
+				caminhos[i] = menorCaminho[i];
+			}
+		}
+		else {
+			MPI_Gather (menorCaminho, n, MPI_INT, caminhos, n, MPI_INT, 0, MPI_COMM_WORLD);
+		}
+	}
 
 	int melhorRank = 0;
 
 	if (myrank == 0) {
 		for (int i=0; i<P; i++) {
-
 			if (custos[i] < menorCusto) {
 				menorCusto = custos[i];
 				melhorRank = i;
@@ -265,6 +256,10 @@ printf("\n");
 		endClock = clock();
 
 		printf("\nMENOR CUSTO: %u\nCAMINHO: ", menorCusto);
+
+		if(menorCaminho == NULL) {
+			menorCaminho = (int *) malloc (n * sizeof(int));
+		}
 
 		for (int i=0; i<n; i++) {
 			menorCaminho[i] = caminhos[ (melhorRank*n) + i ];
