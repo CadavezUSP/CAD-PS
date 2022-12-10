@@ -4,17 +4,18 @@
 #include <time.h>
 #include "mpi.h"
 
+
 void myReverse(int *s, int inicio, int n) {
 	int aux;
 
-	for (int i=0; i<n-i-1; i++) {
-		aux = s[inicio+i];
-		s[inicio+i] = s[n-i-1];
-		s[n-i-1] = aux;
+	for (int i=inicio; i<n; i++, n--) {
+		aux = s[i];
+		s[i] = s[n-1];
+		s[n-1] = aux;
 	}
 }
 
-bool nextPermutation(int *s, int n) {
+int nextPermutation(int *s, int n) {
 	// Find the largest index `i` such that `s[i-1]` is less than `s[i]`
 	int i = n-1;
 	while (s[i-1] >= s[i])
@@ -22,7 +23,7 @@ bool nextPermutation(int *s, int n) {
 	// if `i` is the first index of the string, we are already at the last
 	// possible permutation (string is sorted in reverse order)
 		if (--i == 0) {
-		return false;
+		return 0;
 		}
 	}
 
@@ -39,13 +40,15 @@ bool nextPermutation(int *s, int n) {
 	s[j] = s[i-1];
 	s[i-1] = aux;
 
+
 	// Reverse substring `s[i…n-1]`and return true
 	// std::reverse (s.begin() + i, s.end());
-	myReverse(int *s, i, n);
+	myReverse(s, i, n);
 
 
-	return true;
+	return 1;
 }
+
 
 int **constructGraph(int n) {
 
@@ -95,7 +98,7 @@ unsigned long long factorial (int n) {
 	return factorial;
 }
 
-int *ithPermutation(const int n, int i, int *fact) {
+int *ithPermutation(const int n, int i, unsigned long long *fact) {
    int j, k = 0;
    // int *fact = (int *)calloc(n, sizeof(int));
    int *perm = (int *)calloc(n, sizeof(int));
@@ -106,8 +109,7 @@ int *ithPermutation(const int n, int i, int *fact) {
    //    fact[k] = fact[k - 1] * k;
 
    // compute factorial code
-   for (k = 0; k < n; ++k)
-   {
+   for (k = 0; k < n; ++k) {
       perm[k] = i / fact[n - 1 - k];
       i = i % fact[n - 1 - k];
    }
@@ -125,11 +127,17 @@ int *ithPermutation(const int n, int i, int *fact) {
    return perm;
 }
 
-int calcularCustoPermutacao (int *perm, int **graph, int n) {
+int calcularCustoPermutacao (int *perm, int **graph, int n, unsigned long long test) {
 	int custo = 0;
 	int custoAresta;
 
 	for (int i=0; i<n-1; i++) {
+		if (perm[i]<0 || perm[i+1]<0) {
+			printf("\t%lld", test);
+			printf("\t%d %d\n", i, i+1);
+			printf("\t%d %d\n\n", perm[i], perm[i+1]);
+		}
+		// printf("\t%d\n", graph[perm[i]][perm[i+1]]);
 		custoAresta = graph[perm[i]][perm[i+1]];
 
 		if (custoAresta != 0 && custoAresta != INT_MAX)
@@ -148,9 +156,9 @@ int calcularCustoPermutacao (int *perm, int **graph, int n) {
 
 }
 
-int *calcuarFatorial(int n) {
+unsigned long long *calcuarFatorial(int n) {
 
-   int *fact = (int *)calloc(n, sizeof(int));
+   unsigned long long *fact = (unsigned long long *)calloc(n, sizeof(unsigned long long));
 
    int k = 0;
 
@@ -178,22 +186,30 @@ int main(int argc, char *argv[]) {
 
 	int **graph = constructGraph(n);
 
+	// printar grafo
+	// for (int i=0; i<n; i++) {
+	// 	for (int j=0; j<n; j++) {
+	// 		printf("%d ", graph[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
+
+
 	clock_t beginClock = clock();
 	clock_t endClock;
 	double time_spent = 0.0;
 
 
-   int *fact = calcuarFatorial(n);
+   unsigned long long *fact = calcuarFatorial(n);
 
 	int myrank;
-	MPI_Status status;
 	MPI_Init(&argc, &argv);
 	MPI_Comm_size(MPI_COMM_WORLD, &P);
 	MPI_Comm_rank(MPI_COMM_WORLD, &myrank);
 
 
-	unsigned long long menorCusto = INT_MAX;
-	unsigned long long custoAtual;
+	unsigned int menorCusto = INT_MAX;
+	unsigned int custoAtual;
 	int *permutacaoAtual, *menorCaminho=NULL;
 
 
@@ -201,42 +217,31 @@ int main(int argc, char *argv[]) {
 	unsigned long long permutacaoInicial = permutacoesPorProcessador*myrank;
 	unsigned long long permutacaoFinal = permutacoesPorProcessador*(myrank+1);
 
+	permutacaoAtual = ithPermutation(n, permutacaoInicial, fact);
 
 	// Loop para cada combinação do processador atual
-	for (int i=permutacaoInicial; i<permutacaoFinal; i++) {
-		permutacaoAtual = ithPermutation(n, i, fact);
+	for (unsigned long long i=permutacaoInicial; i<permutacaoFinal; i++) {
 
-		// n * n!/P
-		// 2 * n!/P
-
-		
-	// for (int j=0; j<n; j++) {
-	// 	printf("%d ", permutacaoAtual[j]);
-	// }
-	// printf("\n");
-
-		custoAtual = calcularCustoPermutacao (permutacaoAtual, graph, n);
+		custoAtual = calcularCustoPermutacao (permutacaoAtual, graph, n, i);
 
 		if (custoAtual < menorCusto) {
 			menorCusto = custoAtual;
-			free (menorCaminho);
 			menorCaminho = permutacaoAtual;
 		}
 
-		else 
-			free (permutacaoAtual);
+		nextPermutation(permutacaoAtual, n);
 	}
 
 
 	// MPI_Reduce ()
-	unsigned long long *custos = NULL;
+	unsigned int *custos = NULL;
 	int *caminhos = NULL;
 	if (myrank == 0) {
-		custos = (unsigned long long *) malloc (P * sizeof(unsigned long long));
+		custos = (unsigned int *) malloc (P * sizeof(unsigned int));
 		caminhos = (int  *) malloc (P * n * sizeof(int));
 	}
 	// Gather dos custos
-	MPI_Gather (&menorCusto, 1, MPI_UNSIGNED_LONG_LONG, custos, 1, MPI_UNSIGNED_LONG_LONG, 0, MPI_COMM_WORLD);
+	MPI_Gather (&menorCusto, 1, MPI_UNSIGNED, custos, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
 
 	// Gather dos caminhos
 	MPI_Gather (menorCaminho, n, MPI_INT, caminhos, n, MPI_INT, 0, MPI_COMM_WORLD);
@@ -245,6 +250,7 @@ int main(int argc, char *argv[]) {
 
 	if (myrank == 0) {
 		for (int i=0; i<P; i++) {
+
 			if (custos[i] < menorCusto) {
 				menorCusto = custos[i];
 				melhorRank = i;
@@ -253,7 +259,7 @@ int main(int argc, char *argv[]) {
 
 		endClock = clock();
 
-		printf("\nMENOR CUSTO: %lld\nCAMINHO: ", menorCusto);
+		printf("\nMENOR CUSTO: %u\nCAMINHO: ", menorCusto);
 
 		for (int i=0; i<n; i++) {
 			menorCaminho[i] = caminhos[ (melhorRank*n) + i ];
@@ -274,7 +280,7 @@ int main(int argc, char *argv[]) {
 	MPI_Finalize();
 
 	free(menorCaminho);
-
+	free(fact);
 
 	return 0;
 }

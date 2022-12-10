@@ -52,8 +52,8 @@ void tsp(int **graph, char *v, int currPos, int n, int count, int cost, int *ans
 	// keep the minimum value out of the total cost
 	// of traversal and "ans"
 	// Finally return to check for more possible values
-	if (count == n && graph[currPos][0]) {
-		if (cost + graph[currPos][0] < *ans) {
+	if (count == n && graph[currPos][path[0]]) {
+		if (cost + graph[currPos][path[0]] < *ans) {
 			// atualiza bestPath
 			for (int i=0; i<n; i++) {
 				bestPath[i] = path[i];
